@@ -73,6 +73,11 @@ func (h *infoKegiatanHandler) EditInfoKegiatanHandler(c *gin.Context) {
 		}
 		req.Gambar = infoKegiatan.Gambar
 	} else {
+		errDelImage := h.infoKegiatanService.DeleteImage(c, uint(idUint))
+		if errDelImage != nil {
+			helper.ResponseErrorJson(c, http.StatusInternalServerError, errDelImage)
+			return
+		}
 		req.Gambar = link
 	}
 	

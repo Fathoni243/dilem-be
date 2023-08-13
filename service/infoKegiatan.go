@@ -1,6 +1,10 @@
 package service
 
 import (
+	"math/rand"
+	"path/filepath"
+	"strings"
+	"time"
 	"web-desa/model"
 	"web-desa/request"
 
@@ -92,6 +96,19 @@ func (h *infoKegiatanService) UploadImage(c *gin.Context) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
+	// generate randomString
+    randomString := RandomString(5)
+
+	// untuk mendapatkan ekstensi file
+    ext := filepath.Ext(file.Filename)
+
+	// menghasilkan nama baru dari penggabungan nama file(tanpa ekstensi) + randomString + ekstensi file
+    newFilename := strings.TrimSuffix(file.Filename, ext) + randomString + ext
+
+	// inisialisasi Filename dengan fileName baru
+    file.Filename = newFilename
+
 	link, err := supClient.Upload(file)
 	if err != nil {
 		return "", err
@@ -111,4 +128,15 @@ func (h *infoKegiatanService) DeleteImage(c *gin.Context, id uint) error {
 	} 
 
 	return nil
+}
+
+func RandomString(length int) string {
+	var randomizer = rand.New(rand.NewSource(time.Now().UTC().UnixNano()))
+	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+    
+	b := make([]rune, length)
+    for i := range b {
+        b[i] = letters[randomizer.Intn(len(letters))]
+    }
+    return string(b)
 }

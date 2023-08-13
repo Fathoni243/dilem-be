@@ -1,6 +1,8 @@
 package service
 
 import (
+	"path/filepath"
+	"strings"
 	"web-desa/model"
 	"web-desa/request"
 
@@ -101,6 +103,19 @@ func (w *wisataService) UploadImage(c *gin.Context) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
+	// generate randomString
+    randomString := RandomString(5)
+
+	// untuk mendapatkan ekstensi file
+    ext := filepath.Ext(file.Filename)
+
+	// menghasilkan nama baru dari penggabungan nama file(tanpa ekstensi) + randomString + ekstensi file
+    newFilename := strings.TrimSuffix(file.Filename, ext) + randomString + ext
+
+	// inisialisasi Filename dengan fileName baru
+    file.Filename = newFilename
+
 	link, err := supClientWisata.Upload(file)
 	if err != nil {
 		return "", err
